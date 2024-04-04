@@ -104,3 +104,7 @@ fun ProjectAggregateState.removeFromTaskApply(event: TagRemovedFromTask) {
         ?: throw IllegalArgumentException("No such task: ${event.taskId}")
     updatedAt = System.currentTimeMillis()
 }
+
+enum class TaskStatus {
+    CREATED, IN_PROGRESS, DONE
+}
