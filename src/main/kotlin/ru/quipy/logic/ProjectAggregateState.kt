@@ -12,9 +12,10 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
     var updatedAt: Long = System.currentTimeMillis()
 
     lateinit var projectTitle: String
-    lateinit var creatorId: String
+    lateinit var creatorId: UUID
     var tasks = mutableMapOf<UUID, TaskEntity>()
     var projectTags = mutableMapOf<UUID, TagEntity>()
+    var participants = mutableMapOf<UUID, UserEntity>()
 
     override fun getId() = projectId
 
@@ -30,19 +31,42 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
     @StateTransitionFunc
     fun tagCreatedApply(event: TagCreatedEvent) {
         projectTags[event.tagId] = TagEntity(event.tagId, event.tagName)
-        updatedAt = createdAt
+        updatedAt = System.currentTimeMillis()
     }
 
     @StateTransitionFunc
     fun taskCreatedApply(event: TaskCreatedEvent) {
-        tasks[event.taskId] = TaskEntity(event.taskId, event.taskName, mutableSetOf())
-        updatedAt = createdAt
+        tasks[event.taskId] = TaskEntity(event.taskId, event.title, event.description, TaskStatus.CREATED, mutableSetOf())
+        updatedAt = System.currentTimeMillis()
+    }
+
+    @StateTransitionFunc
+    fun taskUpdatedApply(event: TaskUpdatedEvent) {
+        val task = tasks[event.taskId]
+        if (task != null) {
+            tasks[event.taskId] = TaskEntity(event.taskId, event.title, event.description, event.status, task.tagsAssigned)
+        }
+        updatedAt = System.currentTimeMillis()
+    }
+
+    @StateTransitionFunc
+    fun userAssignedApply(event: UserAssignedToProjectEvent) {
+        participants[event.userId] = UserEntity(event.userId)
+        updatedAt = System.currentTimeMillis()
+    }
+
+    @StateTransitionFunc
+    fun userRemoveApply(event: UserRemoveFromProjectEvent) {
+        participants.remove(event.userId)
+        updatedAt = System.currentTimeMillis()
     }
 }
 
 data class TaskEntity(
     val id: UUID = UUID.randomUUID(),
     val name: String,
+    val description: String,
+    val status: TaskStatus,
     val tagsAssigned: MutableSet<UUID>
 )
 
@@ -58,5 +82,5 @@ data class TagEntity(
 fun ProjectAggregateState.tagAssignedApply(event: TagAssignedToTaskEvent) {
     tasks[event.taskId]?.tagsAssigned?.add(event.tagId)
         ?: throw IllegalArgumentException("No such task: ${event.taskId}")
-    updatedAt = createdAt
+    updatedAt = System.currentTimeMillis()
 }

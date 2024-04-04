@@ -1,16 +1,13 @@
 package ru.quipy.logic
 
-import ru.quipy.api.ProjectCreatedEvent
-import ru.quipy.api.TagAssignedToTaskEvent
-import ru.quipy.api.TagCreatedEvent
-import ru.quipy.api.TaskCreatedEvent
+import ru.quipy.api.*
 import java.util.*
 
 
 // Commands : takes something -> returns event
 // Here the commands are represented by extension functions, but also can be the class member functions
 
-fun ProjectAggregateState.create(id: UUID, title: String, creatorId: String): ProjectCreatedEvent {
+fun ProjectAggregateState.create(id: UUID, title: String, creatorId: UUID): ProjectCreatedEvent {
     return ProjectCreatedEvent(
         projectId = id,
         title = title,
@@ -18,9 +15,20 @@ fun ProjectAggregateState.create(id: UUID, title: String, creatorId: String): Pr
     )
 }
 
-fun ProjectAggregateState.addTask(name: String): TaskCreatedEvent {
-    return TaskCreatedEvent(projectId = this.getId(), taskId = UUID.randomUUID(), taskName = name)
+fun ProjectAggregateState.addTask(name: String, creatorId: UUID, description: String): TaskCreatedEvent {
+    return TaskCreatedEvent(projectId = this.getId(), taskId = UUID.randomUUID(), title = name, creatorId = creatorId, description = description)
 }
+
+fun ProjectAggregateState.updateTask(taskId: UUID, userId: UUID, taskName: String, description: String, status: TaskStatus): TaskUpdatedEvent {
+    if (tasks[taskId] == null) {
+        throw IllegalArgumentException("Task does not exist in project: $taskId")
+    }
+    return TaskUpdatedEvent(projectId = this.getId(), taskId = taskId, userId = userId, title = taskName, description = description, status = status)
+}
+
+//fun ProjectAggregateState.deleteTask(taskId: UUID, userId: UUID): TaskDeletedEvent {
+//    return TaskDeletedEvent(projectId = this.getId(), taskId = taskId, userId = userId)
+//}
 
 fun ProjectAggregateState.createTag(name: String): TagCreatedEvent {
     if (projectTags.values.any { it.name == name }) {
@@ -39,4 +47,12 @@ fun ProjectAggregateState.assignTagToTask(tagId: UUID, taskId: UUID): TagAssigne
     }
 
     return TagAssignedToTaskEvent(projectId = this.getId(), tagId = tagId, taskId = taskId)
+}
+
+fun ProjectAggregateState.assignUserToProject(userId: UUID): UserAssignedToProjectEvent {
+    return UserAssignedToProjectEvent(projectId = this.getId(), userId = userId)
+}
+
+fun ProjectAggregateState.removeUserFromProject(userId: UUID): UserRemoveFromProjectEvent {
+    return UserRemoveFromProjectEvent(projectId = this.getId(), userId = userId)
 }
