@@ -26,9 +26,12 @@ fun ProjectAggregateState.updateTask(taskId: UUID, userId: UUID, taskName: Strin
     return TaskUpdatedEvent(projectId = this.getId(), taskId = taskId, userId = userId, title = taskName, description = description, status = status)
 }
 
-//fun ProjectAggregateState.deleteTask(taskId: UUID, userId: UUID): TaskDeletedEvent {
-//    return TaskDeletedEvent(projectId = this.getId(), taskId = taskId, userId = userId)
-//}
+fun ProjectAggregateState.deleteTask(taskId: UUID, userId: UUID): TaskDeletedEvent {
+    if (tasks[taskId] == null) {
+        throw IllegalArgumentException("Task does not exist in project: $taskId")
+    }
+    return TaskDeletedEvent(projectId = this.getId(), taskId = taskId, userId = userId)
+}
 
 fun ProjectAggregateState.createTag(name: String): TagCreatedEvent {
     if (projectTags.values.any { it.name == name }) {

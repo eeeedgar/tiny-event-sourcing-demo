@@ -50,6 +50,12 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
     }
 
     @StateTransitionFunc
+    fun taskDeletedApply(event: TaskDeletedEvent) {
+        tasks.remove(event.taskId)
+        updatedAt = System.currentTimeMillis()
+    }
+
+    @StateTransitionFunc
     fun userAssignedApply(event: UserAssignedToProjectEvent) {
         participants[event.userId] = UserEntity(event.userId)
         updatedAt = System.currentTimeMillis()

@@ -53,10 +53,10 @@ class ProjectController(
         }
     }
 
-//    @DeleteMapping("/{projectId}/tasks/{taskId}")
-//    fun deleteTask(@PathVariable projectId: UUID, @PathVariable taskId: UUID, @RequestParam userId: UUID) : TaskDeletedEvent? {
-//        return projectEsService.update(projectId) {
-//            it.deleteTask(taskId = taskId, userId = userId)
-//        }
-//    }
+    @DeleteMapping("/{projectId}/tasks/{taskId}")
+    fun deleteTask(@PathVariable projectId: UUID, @PathVariable taskId: UUID, @RequestParam userId: UUID) : TaskDeletedEvent? {
+        return projectEsService.update(projectId) {
+            it.deleteTask(taskId = taskId, userId = userId)
+        }
+    }
 }
