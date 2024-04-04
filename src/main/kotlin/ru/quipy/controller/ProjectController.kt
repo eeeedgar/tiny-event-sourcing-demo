@@ -59,4 +59,18 @@ class ProjectController(
             it.deleteTask(taskId = taskId, userId = userId)
         }
     }
+
+    @PostMapping("/{projectId}/tags")
+    fun createTag(@PathVariable projectId: UUID, @RequestParam tag: String) : TagCreatedEvent? {
+        return projectEsService.update(projectId) {
+            it.createTag(tag)
+        }
+    }
+
+    @DeleteMapping("/{projectId}/tags")
+    fun removeTag(@PathVariable projectId: UUID, @RequestParam tagId: UUID) : TagDeletedEvent? {
+        return projectEsService.update(projectId) {
+            it.deleteTag(tagId)
+        }
+    }
 }

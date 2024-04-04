@@ -46,7 +46,14 @@ fun ProjectAggregateState.createTag(name: String): TagCreatedEvent {
     if (projectTags.values.any { it.name == name }) {
         throw IllegalArgumentException("Tag already exists: $name")
     }
-    return TagCreatedEvent(projectId = this.getId(), tagId = UUID.randomUUID(), tagName = name)
+    return TagCreatedEvent(tagId = UUID.randomUUID(), tagName = name)
+}
+
+fun ProjectAggregateState.deleteTag(tagId: UUID): TagDeletedEvent {
+    if (!projectTags.containsKey(tagId)) {
+        throw IllegalArgumentException("Tag does not exist in project: $tagId")
+    }
+    return TagDeletedEvent(tagId)
 }
 
 fun ProjectAggregateState.assignTagToTask(tagId: UUID, taskId: UUID): TagAssignedToTaskEvent {

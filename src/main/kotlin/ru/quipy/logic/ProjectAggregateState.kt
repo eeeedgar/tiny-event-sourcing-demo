@@ -36,6 +36,12 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
     }
 
     @StateTransitionFunc
+    fun tagDeletedApply(event: TagDeletedEvent) {
+        projectTags.remove(event.tagId)
+        updatedAt = System.currentTimeMillis()
+    }
+
+    @StateTransitionFunc
     fun taskCreatedApply(event: TaskCreatedEvent) {
         tasks[event.taskId] = TaskEntity(event.taskId, event.title, event.description, TaskStatus.CREATED, mutableSetOf())
         updatedAt = System.currentTimeMillis()
