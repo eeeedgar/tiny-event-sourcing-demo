@@ -16,21 +16,30 @@ fun ProjectAggregateState.create(id: UUID, title: String, creatorId: UUID): Proj
 }
 
 fun ProjectAggregateState.addTask(name: String, creatorId: UUID, description: String): TaskCreatedEvent {
+    if (!participants.containsKey(creatorId)) {
+        throw IllegalArgumentException("User is not in the project: $creatorId")
+    }
     return TaskCreatedEvent(projectId = this.getId(), taskId = UUID.randomUUID(), title = name, creatorId = creatorId, description = description)
 }
 
 fun ProjectAggregateState.updateTask(taskId: UUID, userId: UUID, taskName: String, description: String, status: TaskStatus): TaskUpdatedEvent {
-    if (tasks[taskId] == null) {
+    if (!participants.containsKey(userId)) {
+        throw IllegalArgumentException("User is not in the project: $userId")
+    }
+    if (!tasks.containsKey(taskId)) {
         throw IllegalArgumentException("Task does not exist in project: $taskId")
     }
-    return TaskUpdatedEvent(projectId = this.getId(), taskId = taskId, userId = userId, title = taskName, description = description, status = status)
+    return TaskUpdatedEvent(taskId = taskId, userId = userId, title = taskName, description = description, status = status)
 }
 
 fun ProjectAggregateState.deleteTask(taskId: UUID, userId: UUID): TaskDeletedEvent {
+    if (!participants.containsKey(userId)) {
+        throw IllegalArgumentException("User is not in the project: $userId")
+    }
     if (tasks[taskId] == null) {
         throw IllegalArgumentException("Task does not exist in project: $taskId")
     }
-    return TaskDeletedEvent(projectId = this.getId(), taskId = taskId, userId = userId)
+    return TaskDeletedEvent(taskId = taskId, userId = userId)
 }
 
 fun ProjectAggregateState.createTag(name: String): TagCreatedEvent {
@@ -49,13 +58,25 @@ fun ProjectAggregateState.assignTagToTask(tagId: UUID, taskId: UUID): TagAssigne
         throw IllegalArgumentException("Task doesn't exists: $taskId")
     }
 
-    return TagAssignedToTaskEvent(projectId = this.getId(), tagId = tagId, taskId = taskId)
+    return TagAssignedToTaskEvent(tagId = tagId, taskId = taskId)
 }
 
-fun ProjectAggregateState.assignUserToProject(userId: UUID): UserAssignedToProjectEvent {
-    return UserAssignedToProjectEvent(projectId = this.getId(), userId = userId)
+fun ProjectAggregateState.assignUserToProject(userId: UUID, authorId: UUID): UserAssignedToProjectEvent {
+    if (!participants.containsKey(authorId)) {
+        throw IllegalArgumentException("Author is not in the project: $authorId")
+    }
+    if (participants.containsKey(userId)) {
+        throw IllegalArgumentException("User is already in the project: $userId")
+    }
+    return UserAssignedToProjectEvent(userId = userId)
 }
 
-fun ProjectAggregateState.removeUserFromProject(userId: UUID): UserRemoveFromProjectEvent {
-    return UserRemoveFromProjectEvent(projectId = this.getId(), userId = userId)
+fun ProjectAggregateState.removeUserFromProject(userId: UUID, authorId: UUID): UserRemoveFromProjectEvent {
+    if (!participants.containsKey(authorId)) {
+        throw IllegalArgumentException("Author is not in the project: $authorId")
+    }
+    if (!participants.containsKey(userId)) {
+        throw IllegalArgumentException("User is not in the project: $userId")
+    }
+    return UserRemoveFromProjectEvent(userId = userId)
 }

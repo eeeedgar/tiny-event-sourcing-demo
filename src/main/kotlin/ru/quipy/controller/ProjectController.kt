@@ -19,8 +19,8 @@ class ProjectController(
     val projectEsService: EventSourcingService<UUID, ProjectAggregate, ProjectAggregateState>,
 ) {
 
-    @PostMapping("/{projectTitle}")
-    fun createProject(@PathVariable projectTitle: String, @RequestParam creatorId: UUID) : ProjectCreatedEvent {
+    @PostMapping("/")
+    fun createProject(@RequestParam projectTitle: String, @RequestParam creatorId: UUID) : ProjectCreatedEvent {
         return projectEsService.create { it.create(UUID.randomUUID(), projectTitle, creatorId) }
     }
 
@@ -30,13 +30,13 @@ class ProjectController(
     }
 
     @PostMapping("/{projectId}/participants/{userId}")
-    fun assignUser(@PathVariable projectId: UUID, @PathVariable userId: UUID) : UserAssignedToProjectEvent? {
-        return projectEsService.update(projectId){ it.assignUserToProject(userId) }
+    fun assignUser(@PathVariable projectId: UUID, @PathVariable userId: UUID, @RequestParam authorId: UUID) : UserAssignedToProjectEvent? {
+        return projectEsService.update(projectId){ it.assignUserToProject(userId = userId, authorId = authorId) }
     }
 
     @DeleteMapping("/{projectId}/participants/{userId}")
-    fun removeUser(@PathVariable projectId: UUID, @PathVariable userId: UUID) : UserRemoveFromProjectEvent? {
-        return projectEsService.update(projectId){ it.removeUserFromProject(userId) }
+    fun removeUser(@PathVariable projectId: UUID, @PathVariable userId: UUID, @RequestParam authorId: UUID) : UserRemoveFromProjectEvent? {
+        return projectEsService.update(projectId){ it.removeUserFromProject(userId = userId, authorId = authorId) }
     }
 
     @PostMapping("/{projectId}/tasks")
@@ -49,7 +49,7 @@ class ProjectController(
     @PatchMapping("/{projectId}/tasks")
     fun updateTask(@PathVariable projectId: UUID, @RequestParam taskId: UUID, @RequestParam taskName: String, @RequestParam description: String, @RequestParam status: TaskStatus, @RequestParam userId: UUID) : TaskUpdatedEvent? {
         return projectEsService.update(projectId) {
-            it.updateTask(taskId, userId, taskName, description, status)
+            it.updateTask(taskId = taskId, userId = userId, taskName, description, status)
         }
     }
 

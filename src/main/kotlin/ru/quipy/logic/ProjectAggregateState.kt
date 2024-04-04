@@ -26,6 +26,7 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
         projectTitle = event.title
         creatorId = event.creatorId
         updatedAt = createdAt
+        participants[creatorId] = UserEntity(creatorId)
     }
 
     @StateTransitionFunc

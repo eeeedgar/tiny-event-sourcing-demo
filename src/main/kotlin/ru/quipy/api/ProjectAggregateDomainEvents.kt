@@ -9,8 +9,8 @@ import java.util.*
 const val PROJECT_CREATED_EVENT = "PROJECT_CREATED_EVENT"
 const val TAG_CREATED_EVENT = "TAG_CREATED_EVENT"
 const val TAG_ASSIGNED_TO_TASK_EVENT = "TAG_ASSIGNED_TO_TASK_EVENT"
-const val TASK_CREATED_EVENT = "USER_CREATED_EVENT"
-const val TASK_DELETED_EVENT = "USER_DELETED_EVENT"
+const val TASK_CREATED_EVENT = "TASK_CREATED_EVENT"
+const val TASK_DELETED_EVENT = "TASK_DELETED_EVENT"
 const val TASK_UPDATED_EVENT = "TASK_UPDATED_EVENT"
 const val USER_ASSIGNED_TO_PROJECT_EVENT = "USER_ASSIGNED_TO_PROJECT_EVENT"
 const val USER_REMOVE_FROM_PROJECT_EVENT = "USER_REMOVE_FROM_PROJECT_EVENT"
@@ -54,7 +54,6 @@ class TaskCreatedEvent(
 @DomainEvent(name = TASK_UPDATED_EVENT)
 class TaskUpdatedEvent(
     val taskId: UUID,
-    val projectId: UUID,
     val userId: UUID,
     val title: String,
     val description: String,
@@ -67,7 +66,6 @@ class TaskUpdatedEvent(
 
 @DomainEvent(name = TASK_DELETED_EVENT)
 class TaskDeletedEvent(
-    val projectId: UUID,
     val taskId: UUID,
     val userId: UUID,
     createdAt: Long = System.currentTimeMillis(),
@@ -78,7 +76,6 @@ class TaskDeletedEvent(
 
 @DomainEvent(name = TAG_ASSIGNED_TO_TASK_EVENT)
 class TagAssignedToTaskEvent(
-    val projectId: UUID,
     val taskId: UUID,
     val tagId: UUID,
     createdAt: Long = System.currentTimeMillis(),
@@ -89,7 +86,6 @@ class TagAssignedToTaskEvent(
 
 @DomainEvent(name = USER_ASSIGNED_TO_PROJECT_EVENT)
 class UserAssignedToProjectEvent(
-    val projectId: UUID,
     val userId: UUID,
     createdAt: Long = System.currentTimeMillis(),
 ) : Event<ProjectAggregate>(
@@ -99,7 +95,6 @@ class UserAssignedToProjectEvent(
 
 @DomainEvent(name = USER_REMOVE_FROM_PROJECT_EVENT)
 class UserRemoveFromProjectEvent(
-    val projectId: UUID,
     val userId: UUID,
     createdAt: Long = System.currentTimeMillis(),
 ) : Event<ProjectAggregate>(
