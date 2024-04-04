@@ -73,4 +73,18 @@ class ProjectController(
             it.deleteTag(tagId)
         }
     }
+
+    @PostMapping("/{projectId}/tasks/{taskId}/tags/{tagId}")
+    fun assignTagToTask(@PathVariable projectId: UUID, @PathVariable taskId: UUID, @PathVariable tagId: UUID) : TagAssignedToTaskEvent? {
+        return projectEsService.update(projectId) {
+            it.assignTagToTask(tagId, taskId)
+        }
+    }
+
+    @DeleteMapping("/{projectId}/tasks/{taskId}/tags/{tagId}")
+    fun removeTagFromTask(@PathVariable projectId: UUID, @PathVariable taskId: UUID, @PathVariable tagId: UUID) : TagRemovedFromTask? {
+        return projectEsService.update(projectId) {
+            it.removeTagFromTask(tagId, taskId)
+        }
+    }
 }

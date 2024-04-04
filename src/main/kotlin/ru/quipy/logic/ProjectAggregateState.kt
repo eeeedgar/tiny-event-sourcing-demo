@@ -97,3 +97,10 @@ fun ProjectAggregateState.tagAssignedApply(event: TagAssignedToTaskEvent) {
         ?: throw IllegalArgumentException("No such task: ${event.taskId}")
     updatedAt = System.currentTimeMillis()
 }
+
+@StateTransitionFunc
+fun ProjectAggregateState.removeFromTaskApply(event: TagRemovedFromTask) {
+    tasks[event.taskId]?.tagsAssigned?.remove(event.tagId)
+        ?: throw IllegalArgumentException("No such task: ${event.taskId}")
+    updatedAt = System.currentTimeMillis()
+}

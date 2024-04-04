@@ -68,6 +68,20 @@ fun ProjectAggregateState.assignTagToTask(tagId: UUID, taskId: UUID): TagAssigne
     return TagAssignedToTaskEvent(tagId = tagId, taskId = taskId)
 }
 
+fun ProjectAggregateState.removeTagFromTask(tagId: UUID, taskId: UUID): TagRemovedFromTask {
+    if (!projectTags.containsKey(tagId)) {
+        throw IllegalArgumentException("Tag doesn't exists: $tagId")
+    }
+
+    val task = tasks[taskId] ?: throw IllegalArgumentException("Task doesn't exists: $taskId")
+
+    if (task.tagsAssigned.none { it == tagId }) {
+        throw IllegalArgumentException("Tag is not assigned to task: tagId $tagId, taskId $taskId")
+    }
+
+    return TagRemovedFromTask(tagId = tagId, taskId = taskId)
+}
+
 fun ProjectAggregateState.assignUserToProject(userId: UUID, authorId: UUID): UserAssignedToProjectEvent {
     if (!participants.containsKey(authorId)) {
         throw IllegalArgumentException("Author is not in the project: $authorId")
