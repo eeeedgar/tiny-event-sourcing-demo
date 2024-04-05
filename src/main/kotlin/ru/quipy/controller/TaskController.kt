@@ -41,6 +41,17 @@ class TaskController(
         return taskRepository.findAll()
     }
 
+    @GetMapping("/{taskId}")
+    fun getTaskById(@PathVariable taskId: UUID) : Task {
+        return taskRepository.findById(taskId).get()
+    }
+
+
+    @GetMapping("/project/{projectId}")
+    fun getTasksByProject(@PathVariable projectId: UUID) : List<Task> {
+        return taskRepository.findAll().filter { it.projectId == projectId }
+    }
+
     @PatchMapping("/")
     fun updateTask(@RequestParam title: String,
                    @RequestParam description: String,

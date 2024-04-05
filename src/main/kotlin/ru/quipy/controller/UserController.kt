@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.quipy.api.*
 import ru.quipy.core.EventSourcingService
-import ru.quipy.logic.ProjectAggregateState
-//import ru.quipy.logic.TaskAggregateState
 import ru.quipy.logic.UserAggregateState
 import ru.quipy.logic.create
+import ru.quipy.projections.ProjectRepository
 import ru.quipy.projections.User
 import ru.quipy.projections.UserRepository
 import java.util.*
@@ -21,6 +20,7 @@ import java.util.*
 class UserController(
     val userEsService: EventSourcingService<UUID, UserAggregate, UserAggregateState>,
     val userRepository: UserRepository,
+    val projectRepository: ProjectRepository,
 ) {
     @PostMapping
     fun createUser(
@@ -41,5 +41,21 @@ class UserController(
     @GetMapping
     fun getUsers(): List<User> {
         return userRepository.findAll()
+    }
+
+    @GetMapping("/{userId}")
+    fun getUserById(@PathVariable userId: UUID): User {
+        return userRepository.findById(userId).get()
+    }
+
+    @GetMapping("/search/{substring}")
+    fun getUsersByNicknameSubstring(@PathVariable substring: String): List<User> {
+        return userRepository.findAll().filter { it.nickname.contains(substring) }
+    }
+
+    @GetMapping("/project/{projectId}")
+    fun getUsersByProject(@PathVariable projectId: UUID): List<User> {
+        val project = projectRepository.findById(projectId)
+        return userRepository.findAll().filter { project.get().participants.contains(it.userId) }
     }
 }
