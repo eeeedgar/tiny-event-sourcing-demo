@@ -28,6 +28,9 @@ class UserController(
         @RequestParam fullname: String,
         @RequestParam password: String
     ): UserCreatedEvent {
+        if (userRepository.findAll().any { it.nickname == nickname }) {
+            throw IllegalArgumentException("Nickname is taken")
+        }
         return userEsService.create {
             it.create(
                 UUID.randomUUID(),
