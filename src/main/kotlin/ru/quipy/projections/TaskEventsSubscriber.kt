@@ -49,6 +49,7 @@ class TaskEventsSubscriber(val taskRepository: TaskRepository) {
                 val taskOpt = taskRepository.findById(event.taskId)
                 if (taskOpt.isPresent) {
                     val task = taskOpt.get()
+                    taskRepository.deleteById(task.taskId)
                     taskRepository.insert(Task(event.taskId, event.projectId, event.authorId, event.title, event.description, task.performers, event.status))
                 }
             }
@@ -62,6 +63,7 @@ class TaskEventsSubscriber(val taskRepository: TaskRepository) {
                 if (taskOpt.isPresent) {
                     val task = taskOpt.get()
                     task.performers.add(event.performerId)
+                    taskRepository.deleteById(task.taskId)
                     taskRepository.insert(task)
                 }
             }

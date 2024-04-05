@@ -55,6 +55,7 @@ class ProjectEventsSubscriber(val projectRepository: ProjectRepository) {
                 if (projectOpt.isPresent) {
                     val project = projectOpt.get()
                     project.participants.add(event.participantId)
+                    projectRepository.deleteById(project.projectId)
                     projectRepository.insert(project)
                 }
             }
@@ -64,6 +65,7 @@ class ProjectEventsSubscriber(val projectRepository: ProjectRepository) {
                 if (projectOpt.isPresent) {
                     val project = projectOpt.get()
                     project.participants.remove(event.participantId)
+                    projectRepository.deleteById(project.projectId)
                     projectRepository.insert(project)
                 }
             }
