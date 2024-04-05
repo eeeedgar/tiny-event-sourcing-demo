@@ -12,12 +12,15 @@ import ru.quipy.logic.ProjectAggregateState
 //import ru.quipy.logic.TaskAggregateState
 import ru.quipy.logic.UserAggregateState
 import ru.quipy.logic.create
+import ru.quipy.projections.User
+import ru.quipy.projections.UserRepository
 import java.util.*
 
 @RestController
 @RequestMapping("/users")
 class UserController(
-    val userEsService: EventSourcingService<UUID, UserAggregate, UserAggregateState>
+    val userEsService: EventSourcingService<UUID, UserAggregate, UserAggregateState>,
+    val userRepository: UserRepository,
 ) {
     @PostMapping
     fun createUser(
@@ -33,5 +36,10 @@ class UserController(
                 password
             )
         }
+    }
+
+    @GetMapping
+    fun getUsers(): List<User> {
+        return userRepository.findAll()
     }
 }

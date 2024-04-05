@@ -24,7 +24,3 @@ class UserAggregateState : AggregateState<UUID, UserAggregate> {
         createdAt = event.createdAt
     }
 }
-
-data class UserEntity(
-    val id: UUID,
-)

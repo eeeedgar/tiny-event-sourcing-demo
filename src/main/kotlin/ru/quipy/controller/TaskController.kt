@@ -11,13 +11,15 @@ import org.springframework.web.bind.annotation.RestController
 import ru.quipy.api.*
 import ru.quipy.core.EventSourcingService
 import ru.quipy.logic.*
+import ru.quipy.projections.Task
+import ru.quipy.projections.TaskRepository
 import java.util.*
 
 @RestController
 @RequestMapping("/tasks")
 class TaskController(
     val taskEsService: EventSourcingService<UUID, TaskAggregate, TaskAggregateState>,
-    val projectEsService: EventSourcingService<UUID, ProjectAggregate, ProjectAggregateState>,
+    val taskRepository: TaskRepository,
 ) {
 
     @PostMapping("/")
@@ -34,9 +36,9 @@ class TaskController(
             ) }
     }
 
-    @GetMapping("/{projectId}")
-    fun getProject(@PathVariable projectId: UUID) : ProjectAggregateState? {
-        return projectEsService.getState(projectId)
+    @GetMapping()
+    fun getTasks() : List<Task> {
+        return taskRepository.findAll()
     }
 
     @PatchMapping("/")

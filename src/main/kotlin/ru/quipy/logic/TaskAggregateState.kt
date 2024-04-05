@@ -30,7 +30,7 @@ class TaskAggregateState : AggregateState<UUID, TaskAggregate>{
 
         title = event.title
         description = event.description
-        status = TaskStatus.CREATED
+        status = event.status
     }
 
     @StateTransitionFunc
@@ -76,11 +76,3 @@ class TaskAggregateState : AggregateState<UUID, TaskAggregate>{
 enum class TaskStatus {
     CREATED, IN_PROGRESS, DONE
 }
-
-data class TaskEntity(
-    val id: UUID = UUID.randomUUID(),
-    val name: String,
-    val description: String,
-    val status: TaskStatus,
-    val tagsAssigned: MutableSet<UUID>
-)

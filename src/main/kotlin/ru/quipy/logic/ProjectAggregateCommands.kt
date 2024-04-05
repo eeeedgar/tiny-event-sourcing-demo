@@ -14,35 +14,35 @@ fun ProjectAggregateState.create(title: String, authorId: UUID): ProjectCreatedE
     )
 }
 
-fun ProjectAggregateState.createTag(tag: String, authorId: UUID): TagCreatedEvent {
-    if (projectTags.values.any { it.name == tag }) {
-        throw IllegalArgumentException("Tag already exists: $tag")
-    }
-    return TagCreatedEvent(projectId = getId(), authorId = authorId, tagName = tag)
-}
+//fun ProjectAggregateState.createTag(tag: String, authorId: UUID): TagCreatedEvent {
+//    if (projectTags.values.any { it.name == tag }) {
+//        throw IllegalArgumentException("Tag already exists: $tag")
+//    }
+//    return TagCreatedEvent(projectId = getId(), authorId = authorId, tagName = tag)
+//}
 
 fun ProjectAggregateState.deleteTag(tagId: UUID, authorId: UUID): TagDeletedEvent {
-    if (!projectTags.containsKey(tagId)) {
+    if (!projectTags.contains(tagId)) {
         throw IllegalArgumentException("Tag does not exist in project: $tagId")
     }
     return TagDeletedEvent(projectId = getId(), authorId =  authorId, tagId = tagId)
 }
 
 fun ProjectAggregateState.assignUserToProject(participantId: UUID, authorId: UUID): UserAssignedToProjectEvent {
-    if (!participants.containsKey(authorId)) {
+    if (!participants.contains(authorId)) {
         throw IllegalArgumentException("Author is not in the project: $authorId")
     }
-    if (participants.containsKey(participantId)) {
+    if (participants.contains(participantId)) {
         throw IllegalArgumentException("User is already in the project: $participantId")
     }
     return UserAssignedToProjectEvent(projectId = getId(), authorId = authorId, participantId = participantId)
 }
 
 fun ProjectAggregateState.removeUserFromProject(participantId: UUID, authorId: UUID): UserRemoveFromProjectEvent {
-    if (!participants.containsKey(authorId)) {
+    if (!participants.contains(authorId)) {
         throw IllegalArgumentException("Author is not in the project: $authorId")
     }
-    if (!participants.containsKey(participantId)) {
+    if (!participants.contains(participantId)) {
         throw IllegalArgumentException("User is not in the project: $participantId")
     }
     return UserRemoveFromProjectEvent(projectId = getId(), authorId = authorId, participantId = participantId)

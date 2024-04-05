@@ -11,12 +11,15 @@ import org.springframework.web.bind.annotation.RestController
 import ru.quipy.api.*
 import ru.quipy.core.EventSourcingService
 import ru.quipy.logic.*
+import ru.quipy.projections.Project
+import ru.quipy.projections.ProjectRepository
 import java.util.*
 
 @RestController
 @RequestMapping("/projects")
 class ProjectController(
     val projectEsService: EventSourcingService<UUID, ProjectAggregate, ProjectAggregateState>,
+    val projectRepository: ProjectRepository
 ) {
 
     @PostMapping("/")
@@ -24,9 +27,9 @@ class ProjectController(
         return projectEsService.create { it.create(title = projectTitle, authorId = authorId) }
     }
 
-    @GetMapping("/{projectId}")
-    fun getProject(@PathVariable projectId: UUID) : ProjectAggregateState? {
-        return projectEsService.getState(projectId)
+    @GetMapping
+    fun getProjects() : List<Project> {
+        return projectRepository.findAll()
     }
 
     @PostMapping("/{projectId}/participants/{userId}")
@@ -39,12 +42,12 @@ class ProjectController(
         return projectEsService.update(projectId){ it.removeUserFromProject(participantId = participantId, authorId = authorId) }
     }
 
-    @PostMapping("/{projectId}/tags")
-    fun createTag(@PathVariable projectId: UUID, @RequestParam tag: String, @RequestParam authorId: UUID) : TagCreatedEvent? {
-        return projectEsService.update(projectId) {
-            it.createTag(tag = tag, authorId = authorId)
-        }
-    }
+//    @PostMapping("/{projectId}/tags")
+//    fun createTag(@PathVariable projectId: UUID, @RequestParam tag: String, @RequestParam authorId: UUID) : TagCreatedEvent? {
+//        return projectEsService.update(projectId) {
+//            it.createTag(tag = tag, authorId = authorId)
+//        }
+//    }
 
     @DeleteMapping("/{projectId}/tags")
     fun removeTag(@PathVariable projectId: UUID, @RequestParam tagId: UUID, @RequestParam authorId: UUID) : TagDeletedEvent? {

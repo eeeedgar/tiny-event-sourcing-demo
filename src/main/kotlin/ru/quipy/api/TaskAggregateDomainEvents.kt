@@ -27,6 +27,7 @@ class TaskCreatedEvent(
 
     val title: String,
     val description: String,
+    val status: TaskStatus = TaskStatus.CREATED,
 
     createdAt: Long = System.currentTimeMillis(),
     ) : Event<TaskAggregate>(

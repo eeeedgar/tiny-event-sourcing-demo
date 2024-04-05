@@ -19,6 +19,7 @@ class ProjectCreatedEvent(
     val authorId: UUID,
 
     val title: String,
+    val participants: MutableSet<UUID> = mutableSetOf(authorId),
 
     createdAt: Long = System.currentTimeMillis(),
 ) : Event<ProjectAggregate>(
