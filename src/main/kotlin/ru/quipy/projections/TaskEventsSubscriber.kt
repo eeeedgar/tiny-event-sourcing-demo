@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import ru.quipy.api.*
-import ru.quipy.logic.TaskStatus
 import ru.quipy.streams.AggregateSubscriptionsManager
 import java.util.*
 import javax.annotation.PostConstruct
@@ -24,7 +23,7 @@ data class Task(
     var description: String,
 //    val tags: MutableSet<UUID>,
     var performers: MutableSet<UUID>,
-    var status: TaskStatus,
+    var status: UUID,
 )
 
 @Repository

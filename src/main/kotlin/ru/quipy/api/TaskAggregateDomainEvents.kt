@@ -2,7 +2,6 @@ package ru.quipy.api
 
 import ru.quipy.core.annotations.DomainEvent
 import ru.quipy.domain.Event
-import ru.quipy.logic.TaskStatus
 import java.util.*
 
 const val TAG_ASSIGNED_TO_TASK_EVENT = "TAG_ASSIGNED_TO_TASK_EVENT"
@@ -27,7 +26,7 @@ class TaskCreatedEvent(
 
     val title: String,
     val description: String,
-    val status: TaskStatus = TaskStatus.CREATED,
+    val status: UUID,
 
     createdAt: Long = System.currentTimeMillis(),
     ) : Event<TaskAggregate>(
@@ -43,7 +42,7 @@ class TaskUpdatedEvent(
 
     val title: String,
     val description: String,
-    val status: TaskStatus,
+    val status: UUID,
 
     createdAt: Long = System.currentTimeMillis(),
     ) : Event<TaskAggregate>(

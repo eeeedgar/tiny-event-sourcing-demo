@@ -11,6 +11,7 @@ fun ProjectAggregateState.create(title: String, authorId: UUID): ProjectCreatedE
     return ProjectCreatedEvent(
         title = title,
         authorId = authorId,
+        statuses = mutableSetOf(),
     )
 }
 
@@ -47,3 +48,12 @@ fun ProjectAggregateState.removeUserFromProject(participantId: UUID, authorId: U
     }
     return UserRemoveFromProjectEvent(projectId = getId(), authorId = authorId, participantId = participantId)
 }
+
+fun ProjectAggregateState.createStatus(status: StatusEntity, authorId: UUID): StatusCreateEvent {
+    return StatusCreateEvent(getId(), authorId, status)
+}
+
+fun ProjectAggregateState.deleteStatus(statusId: UUID, authorId: UUID): StatusDeleteEvent {
+    return StatusDeleteEvent(getId(), authorId, statusId)
+}
+

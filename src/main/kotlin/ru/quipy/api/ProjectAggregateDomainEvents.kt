@@ -2,6 +2,7 @@ package ru.quipy.api
 
 import ru.quipy.core.annotations.DomainEvent
 import ru.quipy.domain.Event
+import ru.quipy.logic.StatusEntity
 import java.util.*
 
 const val PROJECT_CREATED_EVENT = "PROJECT_CREATED_EVENT"
@@ -12,6 +13,11 @@ const val TAG_DELETED_EVENT = "TAG_DELETED_EVENT"
 const val USER_ASSIGNED_TO_PROJECT_EVENT = "USER_ASSIGNED_TO_PROJECT_EVENT"
 const val USER_REMOVE_FROM_PROJECT_EVENT = "USER_REMOVE_FROM_PROJECT_EVENT"
 
+const val STATUS_CREATE_EVENT = "STATUS_CREATE_EVENT"
+const val STATUS_DELETE_EVENT = "STATUS_DELETE_EVENT"
+
+
+
 // API
 @DomainEvent(name = PROJECT_CREATED_EVENT)
 class ProjectCreatedEvent(
@@ -20,6 +26,7 @@ class ProjectCreatedEvent(
 
     val title: String,
     val participants: MutableSet<UUID> = mutableSetOf(authorId),
+    val statuses: MutableSet<StatusEntity>,
 
     createdAt: Long = System.currentTimeMillis(),
 ) : Event<ProjectAggregate>(
@@ -80,3 +87,30 @@ class UserRemoveFromProjectEvent(
     name = USER_REMOVE_FROM_PROJECT_EVENT,
     createdAt = createdAt
 )
+
+@DomainEvent(name = STATUS_CREATE_EVENT)
+class StatusCreateEvent(
+    val projectId: UUID,
+    val authorId: UUID,
+
+    val status: StatusEntity,
+
+    createdAt: Long = System.currentTimeMillis(),
+) : Event<ProjectAggregate>(
+    name = STATUS_CREATE_EVENT,
+    createdAt = createdAt
+)
+
+@DomainEvent(name = STATUS_DELETE_EVENT)
+class StatusDeleteEvent(
+    val projectId: UUID,
+    val authorId: UUID,
+
+    val statusId: UUID,
+
+    createdAt: Long = System.currentTimeMillis(),
+) : Event<ProjectAggregate>(
+    name = STATUS_DELETE_EVENT,
+    createdAt = createdAt
+)
+

@@ -1,13 +1,13 @@
 package ru.quipy.dto
 
-import ru.quipy.logic.TaskStatus
+import ru.quipy.logic.StatusEntity
 import java.util.*
 
 data class TaskDetailedDto(
     val id: UUID,
     val title: String,
     val description: String,
-    val status: TaskStatus,
+    val status: StatusEntity,
     val performers: Set<UserDto>
 
 )

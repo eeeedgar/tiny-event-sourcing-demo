@@ -7,23 +7,24 @@ import java.util.*
 // Commands : takes something -> returns event
 // Here the commands are represented by extension functions, but also can be the class member functions
 
-fun TaskAggregateState.create(projectId: UUID, title: String, description: String, authorId: UUID): TaskCreatedEvent {
+fun TaskAggregateState.create(projectId: UUID, title: String, description: String, authorId: UUID, statusId: UUID): TaskCreatedEvent {
     return TaskCreatedEvent(
         projectId = projectId,
         title = title,
         description = description,
         authorId = authorId,
+        status = statusId
     )
 }
 
-fun TaskAggregateState.update(taskId: UUID, projectId: UUID, title: String, description: String, authorId: UUID, status: TaskStatus): TaskUpdatedEvent {
+fun TaskAggregateState.update(taskId: UUID, projectId: UUID, title: String, description: String, authorId: UUID, statusId: UUID): TaskUpdatedEvent {
     return TaskUpdatedEvent(
         taskId = taskId,
         projectId = projectId,
         title = title,
         description = description,
         authorId = authorId,
-        status = status,
+        status = statusId,
     )
 }
 

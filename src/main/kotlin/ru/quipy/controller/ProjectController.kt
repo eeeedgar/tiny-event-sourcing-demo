@@ -49,9 +49,10 @@ class ProjectController(
             users.map {
                 UserDto(it.userId, it.nickname) }.toSet(),
             tasks.map {
-                task -> TaskDetailedDto(task.taskId, task.title, task.description, task.status,
+                task -> TaskDetailedDto(task.taskId, task.title, task.description, projectEsService.getState(projectId)!!.statuses.first { it.id == task.status },
                 users.filter { u -> task.performers.contains(u.userId) }.map {
-                    UserDto(it.userId, it.nickname) }.toSet()) }.toSet()
+                    UserDto(it.userId, it.nickname) }.toSet()) }.toSet(),
+            projectEsService.getState(projectId)!!.statuses
         )
     }
 
@@ -87,5 +88,18 @@ class ProjectController(
         return projectEsService.update(projectId) {
             it.deleteTag(tagId = tagId, authorId = authorId)
         }
+    }
+
+    @PostMapping("/{projectId}/status")
+    fun createStatus(@PathVariable projectId: UUID, @RequestParam authorId: UUID, @RequestParam statusName: String, @RequestParam statusHex : String ) : StatusCreateEvent? {
+        return projectEsService.update(projectId){ it.createStatus(status = StatusEntity(UUID.randomUUID(), statusName, statusHex), authorId = authorId) }
+    }
+
+    @DeleteMapping("/{projectId}/status")
+    fun deleteStatus(@PathVariable projectId: UUID, @RequestParam authorId: UUID, @RequestParam statusId: UUID) : StatusDeleteEvent? {
+        if (taskRepository.findAll().filter { it.projectId == projectId }.map { it.status }.toSet().contains(statusId)) {
+            throw IllegalArgumentException("Status is in usage. Can't be deleted")
+        }
+        return projectEsService.update(projectId){ it.deleteStatus(statusId = statusId, authorId = authorId) }
     }
 }

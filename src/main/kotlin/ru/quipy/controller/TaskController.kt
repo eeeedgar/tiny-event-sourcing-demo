@@ -28,7 +28,8 @@ class TaskController(
     fun createTask(@RequestParam title: String,
                    @RequestParam description: String,
                    @RequestParam projectId: UUID,
-                   @RequestParam authorId: UUID
+                   @RequestParam authorId: UUID,
+                   @RequestParam statusId: UUID,
     ) : TaskCreatedEvent {
 
         if (!projectRepository.findById(projectId).get().participants.contains(authorId)) {
@@ -39,7 +40,8 @@ class TaskController(
             it.create(title = title,
                 description = description,
                 projectId = projectId,
-                authorId = authorId
+                authorId = authorId,
+                statusId = statusId,
             ) }
     }
 
@@ -65,7 +67,7 @@ class TaskController(
                    @RequestParam projectId: UUID,
                    @RequestParam authorId: UUID,
                    @RequestParam taskId: UUID,
-                   @RequestParam status: TaskStatus,
+                   @RequestParam statusId: UUID,
     ) : TaskUpdatedEvent {
 
         if (!projectRepository.findById(projectId).get().participants.contains(authorId)) {
@@ -78,7 +80,7 @@ class TaskController(
                 title = title,
                 description = description,
                 authorId = authorId,
-                status = status
+                statusId = statusId
             )}
     }
 

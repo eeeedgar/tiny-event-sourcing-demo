@@ -16,6 +16,7 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
 
     lateinit var projectTags: MutableSet<UUID>
     lateinit var participants: MutableSet<UUID>
+    lateinit var statuses: MutableSet<StatusEntity>
 
     override fun getId() = projectId
 
@@ -27,6 +28,7 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
         creatorId = event.authorId
         updatedAt = createdAt
         participants = event.participants
+        statuses = event.statuses
     }
 
     @StateTransitionFunc
@@ -50,6 +52,18 @@ class ProjectAggregateState : AggregateState<UUID, ProjectAggregate> {
     @StateTransitionFunc
     fun userRemoveApply(event: UserRemoveFromProjectEvent) {
         participants.remove(event.participantId)
+        updatedAt = System.currentTimeMillis()
+    }
+
+    @StateTransitionFunc
+    fun statusCreatedApply(event: StatusCreateEvent) {
+        statuses.add(event.status)
+        updatedAt = System.currentTimeMillis()
+    }
+
+    @StateTransitionFunc
+    fun statusDeletedApply(event: StatusDeleteEvent) {
+        statuses = statuses.filter { it.id != event.statusId }.toMutableSet()
         updatedAt = System.currentTimeMillis()
     }
 }

@@ -14,7 +14,7 @@ class TaskAggregateState : AggregateState<UUID, TaskAggregate>{
 
     lateinit var title: String
     lateinit var description: String
-    lateinit var status: TaskStatus
+    lateinit var status: UUID
 
     var performers = mutableSetOf<UUID>()
 
@@ -73,6 +73,11 @@ class TaskAggregateState : AggregateState<UUID, TaskAggregate>{
     }
 }
 
-enum class TaskStatus {
-    CREATED, IN_PROGRESS, DONE
-}
+data class StatusEntity(
+    val id: UUID = UUID.randomUUID(),
+    var name: String,
+    var hex: String,
+)
+//enum class TaskStatus {
+//    CREATED, IN_PROGRESS, DONE
+//}
