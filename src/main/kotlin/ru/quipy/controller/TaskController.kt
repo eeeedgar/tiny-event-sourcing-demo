@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 import ru.quipy.api.*
 import ru.quipy.core.EventSourcingService
 import ru.quipy.logic.*
+import ru.quipy.projections.ProjectRepository
 import ru.quipy.projections.Task
 import ru.quipy.projections.TaskRepository
 import java.util.*
@@ -20,6 +21,7 @@ import java.util.*
 class TaskController(
     val taskEsService: EventSourcingService<UUID, TaskAggregate, TaskAggregateState>,
     val taskRepository: TaskRepository,
+    val projectRepository: ProjectRepository,
 ) {
 
     @PostMapping("/")
@@ -28,6 +30,11 @@ class TaskController(
                    @RequestParam projectId: UUID,
                    @RequestParam authorId: UUID
     ) : TaskCreatedEvent {
+
+        if (!projectRepository.findById(projectId).get().participants.contains(authorId)) {
+            throw IllegalArgumentException("Author is not in the project: $authorId")
+        }
+
         return taskEsService.create {
             it.create(title = title,
                 description = description,
@@ -60,6 +67,11 @@ class TaskController(
                    @RequestParam taskId: UUID,
                    @RequestParam status: TaskStatus,
     ) : TaskUpdatedEvent {
+
+        if (!projectRepository.findById(projectId).get().participants.contains(authorId)) {
+            throw IllegalArgumentException("Author is not in the project: $authorId")
+        }
+
         return taskEsService.update(taskId) {
             it.update(taskId = taskId,
                 projectId = projectId,
@@ -77,6 +89,11 @@ class TaskController(
                    @RequestParam authorId: UUID,
                    @RequestParam taskId: UUID,
     ) : TaskDeletedEvent {
+
+        if (!projectRepository.findById(projectId).get().participants.contains(authorId)) {
+            throw IllegalArgumentException("Author is not in the project: $authorId")
+        }
+
         return taskEsService.update(taskId) {
             it.delete(taskId = taskId,
                 projectId = projectId,
@@ -90,6 +107,11 @@ class TaskController(
                   @RequestParam authorId: UUID,
                   @RequestParam taskId: UUID,
                   ) : TagAssignedToTaskEvent {
+
+        if (!projectRepository.findById(projectId).get().participants.contains(authorId)) {
+            throw IllegalArgumentException("Author is not in the project: $authorId")
+        }
+
         return taskEsService.update(taskId) {
             it.assignTag(
                 taskId = taskId,
@@ -106,6 +128,11 @@ class TaskController(
                   @RequestParam authorId: UUID,
                   @RequestParam taskId: UUID,
     ) : TagRemovedFromTaskEvent {
+
+        if (!projectRepository.findById(projectId).get().participants.contains(authorId)) {
+            throw IllegalArgumentException("Author is not in the project: $authorId")
+        }
+
         return taskEsService.update(taskId) {
             it.removeTag(
                 taskId = taskId,
@@ -122,6 +149,11 @@ class TaskController(
                   @RequestParam authorId: UUID,
                   @RequestParam taskId: UUID,
     ) : UserAssignedToTaskEvent {
+
+        if (!projectRepository.findById(projectId).get().participants.contains(authorId)) {
+            throw IllegalArgumentException("Author is not in the project: $authorId")
+        }
+
         return taskEsService.update(taskId) {
             it.assignPerformer(
                 taskId = taskId,
@@ -138,6 +170,11 @@ class TaskController(
                   @RequestParam authorId: UUID,
                   @RequestParam taskId: UUID,
     ) : UserRemovedFromTaskEvent {
+
+        if (!projectRepository.findById(projectId).get().participants.contains(authorId)) {
+            throw IllegalArgumentException("Author is not in the project: $authorId")
+        }
+
         return taskEsService.update(taskId) {
             it.removePerformer(
                 taskId = taskId,
